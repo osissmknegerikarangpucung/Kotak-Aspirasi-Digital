@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin Aspirasi — OSIS SMK Negeri Karangpucung</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f3f6f4;
+      color: #111827;
+    }
+    .login-bg {
+      background-image: linear-gradient(135deg, rgba(12, 58, 39, 0.90) 0%, rgba(19, 89, 59, 0.94) 100%),
+                        url('https://drive.google.com/thumbnail?id=1vMA3ILI38njjZcVPBDIOhWsdbHzktcrf&sz=w1600');
+      background-size: cover;
+      background-position: center;
+    }
+    .topbar-bg {
+      background-image: linear-gradient(90deg, rgba(13, 62, 41, 0.94) 0%, rgba(20, 88, 58, 0.94) 100%),
+                        url('https://drive.google.com/thumbnail?id=1vMA3ILI38njjZcVPBDIOhWsdbHzktcrf&sz=w1600');
+      background-size: cover;
+      background-position: center;
+    }
+    .logo-circle-sm {
+      width: 44px;
+      height: 44px;
+      border-radius: 9999px;
+      background: #ffffff;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .logo-circle-sm img, .logo-circle-login img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .logo-circle-login {
+      width: 84px;
+      height: 84px;
+      border-radius: 9999px;
+      background: #ffffff;
+      padding: 8px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased">
+
+  <!-- TOAST NOTIFIKASI ADMIN -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 hidden rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-xl border border-slate-700">
+    <span id="toast-msg"></span>
+  </div>
+
+  <!-- =========================================================
+       VIEW 1: HALAMAN LOGIN PENGURUS OSIS (FIREBASE AUTH)
+       ========================================================= -->
+  <section id="login-view" class="login-bg min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-3xl bg-white p-7 sm:p-9 shadow-2xl border border-white/20">
+      <div class="logo-circle-login mb-4">
+        <img
+          src="https://drive.google.com/thumbnail?id=18ADwdV7-MEDMMzGr07BXvqPZvA1hHviR&sz=w800"
+          onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/18ADwdV7-MEDMMzGr07BXvqPZvA1hHviR=s800';"
+          alt="Logo SMK Negeri Karangpucung"
+        />
+      </div>
+
+      <div class="text-center mb-6">
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900">Dashboard Admin</h1>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">
+          Kotak Aspirasi Digital • OSIS SMK Negeri Karangpucung
+        </p>
+      </div>
+
+      <div id="login-error" class="hidden mb-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs sm:text-sm font-semibold text-rose-700"></div>
+
+      <form id="form-login" class="space-y-4">
+        <div>
+          <label for="admin-email" class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">Email Pengurus</label>
+          <input
+            type="email"
+            id="admin-email"
+            required
+            placeholder="admin.osis@smkneka.sch.id"
+            class="w-full rounded-xl border border-slate-300 px-3.5 py-3 text-sm text-slate-900 focus:border-[#145338] focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="admin-password" class="block text-xs sm:text-sm font-bold text-slate-700 mb-1.5">Password</label>
+          <input
+            type="password"
+            id="admin-password"
+            required
+            placeholder="Masukkan password"
+            class="w-full rounded-xl border border-slate-300 px-3.5 py-3 text-sm text-slate-900 focus:border-[#145338] focus:outline-none"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="btn-login"
+          class="w-full rounded-xl bg-[#145338] hover:bg-[#0f3f2a] py-3.5 px-4 text-sm font-extrabold text-white shadow-md transition cursor-pointer"
+        >
+          Masuk ke Dashboard
+        </button>
+      </form>
+
+      <p class="mt-5 text-center text-[11px] text-slate-400">
+        Akses terbatas khusus Pengurus Internal OSIS SMK Negeri Karangpucung.
+      </p>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       VIEW 2: DASHBOARD ASPIRASI OSIS (SETELAH LOGIN)
+       ========================================================= -->
+  <div id="dashboard-view" class="hidden min-h-screen flex flex-col">
+    <!-- TOP BAR -->
+    <header class="topbar-bg text-white shadow-md">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="logo-circle-sm">
+            <img
+              src="https://drive.google.com/thumbnail?id=18ADwdV7-MEDMMzGr07BXvqPZvA1hHviR&sz=w800"
+              onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/18ADwdV7-MEDMMzGr07BXvqPZvA1hHviR=s800';"
+              alt="Logo SMKN Karangpucung"
+            />
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight">Dashboard Aspirasi OSIS</h1>
+            <p class="text-xs text-emerald-100">SMK Negeri Karangpucung • Panel Pengelolaan Internal</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="btn-export-csv" class="rounded-xl bg-white/95 hover:bg-white text-slate-900 px-3.5 py-2 text-xs font-bold shadow-xs transition cursor-pointer">
+            Ekspor CSV / Excel
+          </button>
+          <button type="button" id="btn-refresh" class="rounded-xl bg-white/15 hover:bg-white/25 text-white border border-white/25 px-3.5 py-2 text-xs font-bold transition cursor-pointer">
+            Muat Ulang
+          </button>
+          <button type="button" id="btn-logout" class="rounded-xl bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 text-xs font-bold shadow-xs transition cursor-pointer">
+            Keluar
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- KONTEN DASHBOARD -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+      <!-- RINGKASAN STATISTIK -->
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h2 class="text-base sm:text-lg font-extrabold text-slate-900">Ringkasan Aspirasi</h2>
+            <p class="text-xs text-slate-500">Pantau seluruh laporan siswa secara real-time</p>
+          </div>
+          <span id="last-updated" class="rounded-full bg-emerald-100 text-emerald-800 px-3 py-1 text-xs font-bold">
+            Live Firebase
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          <div class="rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
+            <p class="text-xs font-semibold text-slate-500">Total Aspirasi</p>
+            <p id="stat-total" class="mt-2 text-2xl sm:text-3xl font-extrabold text-slate-900">0</p>
+            <p class="mt-1 text-[11px] text-slate-400">Seluruh data tersimpan</p>
+          </div>
+          <div class="rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
+            <p class="text-xs font-semibold text-slate-500">Saran</p>
+            <p id="stat-saran" class="mt-2 text-2xl sm:text-3xl font-extrabold text-emerald-700">0</p>
+            <p class="mt-1 text-[11px] text-slate-400">Aspirasi berupa saran</p>
+          </div>
+          <div class="rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
+            <p class="text-xs font-semibold text-slate-500">Kritik</p>
+            <p id="stat-kritik" class="mt-2 text-2xl sm:text-3xl font-extrabold text-amber-600">0</p>
+            <p class="mt-1 text-[11px] text-slate-400">Masukan berupa kritik</p>
+          </div>
+          <div class="rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
+            <p class="text-xs font-semibold text-slate-500">Pengaduan</p>
+            <p id="stat-pengaduan" class="mt-2 text-2xl sm:text-3xl font-extrabold text-rose-600">0</p>
+            <p class="mt-1 text-[11px] text-slate-400">Laporan / pengaduan</p>
+          </div>
+          <div class="rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs col-span-2 sm:col-span-1">
+            <p class="text-xs font-semibold text-slate-500">Pendapat &amp; Lainnya</p>
+            <p id="stat-lainnya" class="mt-2 text-2xl sm:text-3xl font-extrabold text-blue-700">0</p>
+            <p class="mt-1 text-[11px] text-slate-400">Ide kegiatan &amp; lainnya</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FILTER & PENCARIAN -->
+      <section class="rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-xs space-y-3">
+        <h3 class="text-sm font-extrabold text-slate-900">Filter dan Pencarian</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Cari Aspirasi</label>
+            <input type="text" id="filter-search" placeholder="Nama, kelas, tiket, isi..." class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm focus:border-[#145338] focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Jenis Aspirasi</label>
+            <select id="filter-jenis" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm focus:border-[#145338] focus:outline-none">
+              <option value="">Semua jenis</option>
+              <option value="Saran">Saran</option>
+              <option value="Kritik">Kritik</option>
+              <option value="Pengaduan">Pengaduan</option>
+              <option value="Pendapat">Pendapat</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Status Penanganan</label>
+            <select id="filter-status" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs sm:text-sm focus:border-[#145338] focus:outline-none">
+              <option value="">Semua status</option>
+              <option value="Menunggu">Menunggu</option>
+              <option value="Diproses">Diproses</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </div>
+          <div class="flex items-end">
+            <button type="button" id="btn-reset-filter" class="w-full rounded-xl border border-slate-300 bg-slate-50 hover:bg-slate-100 px-3 py-2 text-xs sm:text-sm font-bold text-slate-700 transition cursor-pointer">
+              Reset Filter
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABEL DAFTAR ASPIRASI MASUK -->
+      <section class="rounded-2xl bg-white border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Daftar Aspirasi Masuk</h3>
+            <p id="result-count" class="text-xs text-slate-500 mt-0.5">Menampilkan 0 aspirasi</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <th class="py-3 px-4 w-12">No.</th>
+                <th class="py-3 px-4">Waktu &amp; Tiket</th>
+                <th class="py-3 px-4">Identitas</th>
+                <th class="py-3 px-4">Jenis</th>
+                <th class="py-3 px-4 min-w-[240px]">Isi Aspirasi</th>
+                <th class="py-3 px-4">Bukti Foto</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="8" class="py-10 text-center text-slate-400">Memuat data aspirasi...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =========================================================
+       MODAL DETAIL & TINDAK LANJUT ASPIRASI (INTERNAL ADMIN)
+       ========================================================= -->
+  <div id="modal-detail" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl rounded-3xl bg-white p-6 sm:p-7 shadow-2xl max-h-[90vh] overflow-y-auto space-y-5">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-4">
+        <div>
+          <span id="modal-ticket" class="rounded-lg bg-emerald-100 px-2.5 py-1 text-xs font-extrabold text-emerald-900"></span>
+          <h3 class="mt-2 text-lg font-extrabold text-slate-900">Detail &amp; Tindak Lanjut Aspirasi</h3>
+        </div>
+        <button type="button" id="btn-close-modal" class="rounded-xl p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700 cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 rounded-2xl bg-slate-50 p-4 text-xs sm:text-sm">
+        <div>
+          <span class="text-slate-500">Pengirim:</span>
+          <p id="modal-nama" class="font-bold text-slate-900"></p>
+        </div>
+        <div>
+          <span class="text-slate-500">Kelas:</span>
+          <p id="modal-kelas" class="font-bold text-slate-900"></p>
+        </div>
+        <div>
+          <span class="text-slate-500">Jenis:</span>
+          <p id="modal-jenis" class="font-bold text-slate-900"></p>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Isi Lengkap Aspirasi</label>
+        <div id="modal-pesan" class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-sm text-slate-800 leading-relaxed whitespace-pre-wrap"></div>
+      </div>
+
+      <div id="modal-foto-section" class="hidden">
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Lampiran</label>
+          <a id="modal-foto-link" href="#" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-emerald-700 hover:underline">
+            Buka Ukuran Penuh ↗
+          </a>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-slate-50 p-3">
+          <img id="modal-foto-img" src="" alt="Bukti Foto Aspirasi" class="max-h-80 w-full object-contain rounded-xl bg-white" />
+        </div>
+      </div>
+
+      <form id="form-update-aspirasi" class="space-y-4 border-t border-slate-100 pt-4">
+        <input type="hidden" id="modal-doc-id" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label for="modal-status" class="block text-xs font-bold text-slate-700 mb-1.5">Status Penanganan</label>
+            <select id="modal-status" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm font-semibold text-slate-900">
+              <option value="Menunggu">Menunggu</option>
+              <option value="Diproses">Diproses</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </div>
+
+          <!-- Disposisi Internal Kementerian (Hanya Terlihat di Dashboard Admin) -->
+          <div>
+            <label for="modal-disposisi" class="block text-xs font-bold text-slate-700 mb-1.5">Disposisi Internal (Khusus Pengurus)</label>
+            <select id="modal-disposisi" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm text-slate-900">
+              <option value="">-- Belum Didisposisikan --</option>
+              <option value="Pimpinan Kabinet">Pimpinan Kabinet</option>
+              <option value="Menko Pembinaan & Ketakwaan">Menko Pembinaan &amp; Ketakwaan</option>
+              <option value="Menko Kepribadian & Budi Pekerti">Menko Kepribadian &amp; Budi Pekerti</option>
+              <option value="Menko Pendidikan & Bela Negara">Menko Pendidikan &amp; Bela Negara</option>
+              <option value="Menko Prestasi Akademik">Menko Prestasi Akademik</option>
+              <option value="Menko Demokrasi, HAM & Pengabdian">Menko Demokrasi, HAM &amp; Pengabdian</option>
+              <option value="Menko Kreativitas & Kewirausahaan">Menko Kreativitas &amp; Kewirausahaan</option>
+              <option value="Menko Kebugaran & Kesehatan">Menko Kebugaran &amp; Kesehatan</option>
+              <option value="Menko Seni, Sastra & Budaya">Menko Seni, Sastra &amp; Budaya</option>
+              <option value="Menko Teknologi, Komunikasi & Informasi">Menko Teknologi, Komunikasi &amp; Informasi</option>
+              <option value="Menko Pengembangan Kemampuan Berbahasa">Menko Pengembangan Kemampuan Berbahasa</option>
+              <option value="Menteri Bidang Kebersihan & Sarana">Menteri Bidang Kebersihan &amp; Sarana</option>
+              <option value="Menteri Bidang Aspirasi & Pelayanan Siswa">Menteri Bidang Aspirasi &amp; Pelayanan Siswa</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label for="modal-tanggapan" class="block text-xs font-bold text-slate-700 mb-1.5">
+            Tanggapan Resmi OSIS (Dapat dibaca siswa lewat Cek Tiket)
+          </label>
+          <textarea
+            id="modal-tanggapan"
+            rows="3"
+            placeholder="Tuliskan tanggapan atau tindak lanjut resmi dari OSIS..."
+            class="w-full rounded-xl border border-slate-300 p-3 text-sm text-slate-900 focus:border-[#145338] focus:outline-none"
+          ></textarea>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-end gap-2.5 pt-2">
+          <button type="button" id="btn-cancel-modal" class="rounded-xl border border-slate-300 px-4 py-2.5 text-xs sm:text-sm font-bold text-slate-700 hover:bg-slate-50 cursor-pointer">
+            Batal
+          </button>
+          <button type="submit" id="btn-save-update" class="rounded-xl bg-[#145338] hover:bg-[#0f3f2a] px-5 py-2.5 text-xs sm:text-sm font-extrabold text-white shadow-sm cursor-pointer">
+            Simpan Perubahan
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SCRIPT FIREBASE AUTH, FIRESTORE & STORAGE ADMIN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      query,
+      orderBy,
+      onSnapshot,
+      doc,
+      updateDoc,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      deleteObject
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let unsubscribeSnapshot = null;
+    let semuaAspirasi = [];
+
+    const loginView = document.getElementById("login-view");
+    const dashboardView = document.getElementById("dashboard-view");
+    const loginError = document.getElementById("login-error");
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      document.getElementById("toast-msg").textContent = msg;
+      toast.classList.remove("hidden");
+      clearTimeout(window.__t);
+      window.__t = setTimeout(() => toast.classList.add("hidden"), 2800);
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        loginView.classList.add("hidden");
+        dashboardView.classList.remove("hidden");
+        mulaiListenerAspirasi();
+      } else {
+        dashboardView.classList.add("hidden");
+        loginView.classList.remove("hidden");
+        if (unsubscribeSnapshot) unsubscribeSnapshot();
+      }
+    });
+
+    document.getElementById("form-login").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("admin-email").value.trim();
+      const pass = document.getElementById("admin-password").value;
+      const btn = document.getElementById("btn-login");
+
+      loginError.classList.add("hidden");
+      btn.disabled = true;
+      btn.textContent = "Memverifikasi...";
+
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        showToast("Berhasil masuk ke Dashboard Admin");
+      } catch (err) {
+        loginError.textContent = "Email atau password salah, atau akun belum terdaftar di Firebase Authentication.";
+        loginError.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Masuk ke Dashboard";
+      }
+    });
+
+    document.getElementById("btn-logout").addEventListener("click", async () => {
+      await signOut(auth);
+      showToast("Anda telah keluar dari dashboard");
+    });
+
+    function mulaiListenerAspirasi() {
+      if (unsubscribeSnapshot) unsubscribeSnapshot();
+
+      const q = query(collection(db, "aspirasi"), orderBy("createdAt", "desc"));
+      unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+        semuaAspirasi = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data()
+        }));
+        updateStatistik();
+        renderTabel();
+      }, (err) => {
+        console.error(err);
+        showToast("Gagal membaca data Firestore (periksa Security Rules)");
+      });
+    }
+
+    document.getElementById("btn-refresh").addEventListener("click", () => {
+      mulaiListenerAspirasi();
+      showToast("Data dimuat ulang");
+    });
+
+    function updateStatistik() {
+      const total = semuaAspirasi.length;
+      const saran = semuaAspirasi.filter(a => a.jenis === "Saran").length;
+      const kritik = semuaAspirasi.filter(a => a.jenis === "Kritik").length;
+      const pengaduan = semuaAspirasi.filter(a => a.jenis === "Pengaduan").length;
+      const lainnya = semuaAspirasi.filter(a => a.jenis === "Pendapat" || a.jenis === "Lainnya").length;
+
+      document.getElementById("stat-total").textContent = total;
+      document.getElementById("stat-saran").textContent = saran;
+      document.getElementById("stat-kritik").textContent = kritik;
+      document.getElementById("stat-pengaduan").textContent = pengaduan;
+      document.getElementById("stat-lainnya").textContent = lainnya;
+    }
+
+    function renderTabel() {
+      const keyword = document.getElementById("filter-search").value.trim().toLowerCase();
+      const jenisFilter = document.getElementById("filter-jenis").value;
+      const statusFilter = document.getElementById("filter-status").value;
+
+      const hasil = semuaAspirasi.filter((item) => {
+        const cocokJenis = !jenisFilter || item.jenis === jenisFilter;
+        const cocokStatus = !statusFilter || (item.status || "Menunggu") === statusFilter;
+        const teksGabung = `${item.ticketId} ${item.nama} ${item.kelas} ${item.pesan}`.toLowerCase();
+        const cocokKeyword = !keyword || teksGabung.includes(keyword);
+        return cocokJenis && cocokStatus && cocokKeyword;
+      });
+
+      document.getElementById("result-count").textContent = `Hasil pencarian: ${hasil.length} aspirasi`;
+      const tbody = document.getElementById("table-body");
+
+      if (hasil.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-10 text-center text-slate-400">Tidak ada data aspirasi yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = hasil.map((item, idx) => {
+        const waktu = item.createdAt?.toDate
+          ? item.createdAt.toDate().toLocaleString("id-ID", { dateStyle: "short", timeStyle: "short" })
+          : "-";
+
+        let jenisBadge = "bg-slate-100 text-slate-700";
+        if (item.jenis === "Saran") jenisBadge = "bg-emerald-100 text-emerald-800";
+        else if (item.jenis === "Kritik") jenisBadge = "bg-amber-100 text-amber-800";
+        else if (item.jenis === "Pengaduan") jenisBadge = "bg-rose-100 text-rose-800";
+        else if (item.jenis === "Pendapat") jenisBadge = "bg-blue-100 text-blue-800";
+
+        const st = item.status || "Menunggu";
+        let statusBadge = "bg-slate-100 text-slate-700";
+        if (st === "Selesai") statusBadge = "bg-emerald-100 text-emerald-800";
+        else if (st === "Diproses") statusBadge = "bg-amber-100 text-amber-800";
+
+        const buktiCell = item.buktiFotoUrl
+          ? `<a href="${escapeHtml(item.buktiFotoUrl)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-emerald-100">Lihat Foto</a>`
+          : `<span class="text-[11px] text-slate-400">Tidak ada</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition">
+            <td class="py-3.5 px-4 font-semibold text-slate-500">${idx + 1}</td>
+            <td class="py-3.5 px-4">
+              <div class="font-semibold text-slate-800">${escapeHtml(waktu)}</div>
+              <div class="text-[11px] font-bold text-emerald-700">${escapeHtml(item.ticketId || "-")}</div>
+            </td>
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-900">${escapeHtml(item.nama || "Anonim")}</div>
+              <div class="text-[11px] text-slate-500">${escapeHtml(item.kelas || "-")}</div>
+            </td>
+            <td class="py-3.5 px-4">
+              <span class="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold ${jenisBadge}">
+                ${escapeHtml(item.jenis || "-")}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 max-w-xs">
+              <p class="line-clamp-2 text-slate-700">${escapeHtml(item.pesan || "")}</p>
+              ${item.disposisiInternal ? `<span class="mt-1 inline-block text-[10px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded">Disposisi: ${escapeHtml(item.disposisiInternal)}</span>` : ""}
+            </td>
+            <td class="py-3.5 px-4 whitespace-nowrap">${buktiCell}</td>
+            <td class="py-3.5 px-4">
+              <span class="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-bold ${statusBadge}">
+                ${escapeHtml(st)}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
+              <button type="button" data-detail="${item.id}" class="rounded-lg border border-slate-300 bg-white hover:bg-slate-100 px-2.5 py-1.5 text-xs font-bold text-slate-700 cursor-pointer">
+                Detail
+              </button>
+              <button type="button" data-delete="${item.id}" class="rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1.5 text-xs font-bold text-rose-700 cursor-pointer">
+                Hapus
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      document.querySelectorAll("[data-detail]").forEach((btn) => {
+        btn.addEventListener("click", () => bukaModalDetail(btn.getAttribute("data-detail")));
+      });
+      document.querySelectorAll("[data-delete]").forEach((btn) => {
+        btn.addEventListener("click", () => hapusAspirasi(btn.getAttribute("data-delete")));
+      });
+    }
+
+    document.getElementById("filter-search").addEventListener("input", renderTabel);
+    document.getElementById("filter-jenis").addEventListener("change", renderTabel);
+    document.getElementById("filter-status").addEventListener("change", renderTabel);
+    document.getElementById("btn-reset-filter").addEventListener("click", () => {
+      document.getElementById("filter-search").value = "";
+      document.getElementById("filter-jenis").value = "";
+      document.getElementById("filter-status").value = "";
+      renderTabel();
+    });
+
+    const modalDetail = document.getElementById("modal-detail");
+
+    function bukaModalDetail(docId) {
+      const item = semuaAspirasi.find(a => a.id === docId);
+      if (!item) return;
+
+      document.getElementById("modal-doc-id").value = item.id;
+      document.getElementById("modal-ticket").textContent = item.ticketId || "-";
+      document.getElementById("modal-nama").textContent = item.nama || "Anonim";
+      document.getElementById("modal-kelas").textContent = item.kelas || "-";
+      document.getElementById("modal-jenis").textContent = item.jenis || "-";
+      document.getElementById("modal-pesan").textContent = item.pesan || "-";
+      document.getElementById("modal-status").value = item.status || "Menunggu";
+      document.getElementById("modal-disposisi").value = item.disposisiInternal || "";
+      document.getElementById("modal-tanggapan").value = item.tanggapan || "";
+
+      const fotoSection = document.getElementById("modal-foto-section");
+      const fotoImg = document.getElementById("modal-foto-img");
+      const fotoLink = document.getElementById("modal-foto-link");
+      if (item.buktiFotoUrl) {
+        fotoImg.src = item.buktiFotoUrl;
+        fotoLink.href = item.buktiFotoUrl;
+        fotoSection.classList.remove("hidden");
+      } else {
+        fotoImg.src = "";
+        fotoLink.href = "#";
+        fotoSection.classList.add("hidden");
+      }
+
+      modalDetail.classList.remove("hidden");
+    }
+
+    function tutupModal() {
+      modalDetail.classList.add("hidden");
+    }
+
+    document.getElementById("btn-close-modal").addEventListener("click", tutupModal);
+    document.getElementById("btn-cancel-modal").addEventListener("click", tutupModal);
+
+    document.getElementById("form-update-aspirasi").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const docId = document.getElementById("modal-doc-id").value;
+      const status = document.getElementById("modal-status").value;
+      const disposisiInternal = document.getElementById("modal-disposisi").value;
+      const tanggapan = document.getElementById("modal-tanggapan").value.trim();
+
+      const btnSave = document.getElementById("btn-save-update");
+      btnSave.disabled = true;
+      btnSave.textContent = "Menyimpan...";
+
+      try {
+        await updateDoc(doc(db, "aspirasi", docId), {
+          status,
+          disposisiInternal,
+          tanggapan
+        });
+        tutupModal();
+        showToast("Tindak lanjut aspirasi berhasil disimpan");
+      } catch (err) {
+        console.error(err);
+        showToast("Gagal menyimpan perubahan");
+      } finally {
+        btnSave.disabled = false;
+        btnSave.textContent = "Simpan Perubahan";
+      }
+    });
+
+    async function hapusAspirasi(docId) {
+      const item = semuaAspirasi.find(a => a.id === docId);
+      const konfirmasi = window.confirm("Apakah Anda yakin ingin menghapus data aspirasi ini beserta bukti fotonya secara permanen?");
+      if (!konfirmasi) return;
+
+      try {
+        if (item?.buktiFotoPath) {
+          try {
+            await deleteObject(ref(storage, item.buktiFotoPath));
+          } catch (storageErr) {
+            console.warn("File di Storage tidak ditemukan atau sudah terhapus:", storageErr);
+          }
+        }
+        await deleteDoc(doc(db, "aspirasi", docId));
+        showToast("Data aspirasi berhasil dihapus");
+      } catch (err) {
+        console.error(err);
+        showToast("Gagal menghapus data");
+      }
+    }
+
+    document.getElementById("btn-export-csv").addEventListener("click", () => {
+      if (semuaAspirasi.length === 0) {
+        showToast("Belum ada data untuk diekspor");
+        return;
+      }
+      const headers = ["No", "Kode Tiket", "Waktu", "Nama", "Kelas", "Jenis", "Isi Aspirasi", "Link Bukti Foto", "Status", "Disposisi Internal", "Tanggapan"];
+      const rows = semuaAspirasi.map((item, i) => {
+        const waktu = item.createdAt?.toDate ? item.createdAt.toDate().toISOString() : "";
+        return [
+          i + 1,
+          item.ticketId || "",
+          waktu,
+          item.nama || "Anonim",
+          item.kelas || "-",
+          item.jenis || "",
+          (item.pesan || "").replace(/\r?\n/g, " "),
+          item.buktiFotoUrl || "-",
+          item.status || "Menunggu",
+          item.disposisiInternal || "",
+          (item.tanggapan || "").replace(/\r?\n/g, " ")
+        ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(",");
+      });
+
+      const csvContent = "\uFEFF" + [headers.join(","), ...rows].join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Rekap_Aspirasi_OSIS_SMKNEKA_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("File CSV berhasil diunduh");
+    });
+  </script>
+</body>
+</html>

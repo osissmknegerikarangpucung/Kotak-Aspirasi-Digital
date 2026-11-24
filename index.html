@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kotak Aspirasi Digital — OSIS SMK Negeri Karangpucung</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f3f6f4;
+      color: #111827;
+    }
+    .hero-banner {
+      background-image: linear-gradient(180deg, rgba(13, 62, 41, 0.84) 0%, rgba(18, 86, 56, 0.90) 100%),
+                        url('https://drive.google.com/thumbnail?id=1vMA3ILI38njjZcVPBDIOhWsdbHzktcrf&sz=w1600');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .logo-frame {
+      width: 96px;
+      height: 96px;
+      border-radius: 9999px;
+      background: #ffffff;
+      padding: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .logo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    @media (min-width: 640px) {
+      .logo-frame {
+        width: 112px;
+        height: 112px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-emerald-700 selection:text-white">
+
+  <!-- HERO HEADER DENGAN FOTO GEDUNG SMK NEGERI KARANGPUCUNG -->
+  <header class="hero-banner text-white pt-10 pb-28 sm:pt-14 sm:pb-36 px-4 text-center relative">
+    <div class="max-w-3xl mx-auto flex flex-col items-center">
+      <div class="logo-frame mb-4">
+        <img
+          src="https://drive.google.com/thumbnail?id=18ADwdV7-MEDMMzGr07BXvqPZvA1hHviR&sz=w800"
+          onerror="this.onerror=null;this.src='https://lh3.googleusercontent.com/d/18ADwdV7-MEDMMzGr07BXvqPZvA1hHviR=s800';"
+          alt="Logo SMK Negeri Karangpucung"
+        />
+      </div>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-xs px-3.5 py-1 text-xs sm:text-sm font-semibold tracking-wide text-emerald-100 border border-white/20 mb-3">
+        OSIS SMK NEGERI KARANGPUCUNG
+      </span>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight uppercase">
+        KOTAK ASPIRASI DIGITAL
+      </h1>
+      <p class="mt-2.5 text-sm sm:text-base text-emerald-50/95 max-w-xl leading-relaxed">
+        Salurkan kritik, saran, pendapat, dan pengaduan Anda secara santun dan konstruktif demi kemajuan lingkungan sekolah kita bersama.
+      </p>
+    </div>
+  </header>
+
+  <!-- KONTEN UTAMA: LAYOUT BESAR & NYAMAN UNTUK SISWA -->
+  <main class="flex-1 px-4 sm:px-6 -mt-20 sm:-mt-24 pb-14 z-10">
+    <div class="max-w-3xl mx-auto space-y-6">
+
+      <!-- NOTIFIKASI STATUS / BLOKIR KATA TIDAK SOPAN -->
+      <div id="alert-box" class="hidden rounded-2xl p-4 sm:p-5 border text-sm sm:text-base shadow-md transition-all" role="alert">
+        <div class="flex items-start gap-3.5">
+          <div id="alert-icon" class="shrink-0 mt-0.5"></div>
+          <div class="flex-1">
+            <h3 id="alert-title" class="font-bold text-base sm:text-lg"></h3>
+            <p id="alert-desc" class="mt-1 leading-relaxed"></p>
+            <div id="ticket-result" class="hidden mt-3 rounded-xl bg-white/90 border border-emerald-300 p-3.5 text-slate-900">
+              <p class="text-xs font-semibold uppercase tracking-wider text-emerald-800">Kode Tiket Laporan Anda:</p>
+              <div class="mt-1 flex flex-wrap items-center justify-between gap-2">
+                <span id="ticket-code-text" class="text-lg sm:text-xl font-extrabold tracking-wider text-emerald-900 select-all"></span>
+                <button type="button" id="btn-copy-ticket" class="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-800 transition cursor-pointer">
+                  Salin Kode Tiket
+                </button>
+              </div>
+              <p class="mt-1.5 text-xs text-slate-600">Simpan kode tiket ini untuk mengecek status penanganan aspirasi Anda di tab <strong>Cek Status Tiket</strong>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB NAVIGASI SISWA: KIRIM ASPIRASI vs CEK STATUS TIKET -->
+      <div class="grid grid-cols-2 gap-2 rounded-2xl bg-white p-2 shadow-sm border border-slate-200/80">
+        <button type="button" id="tab-kirim" class="rounded-xl py-3 px-4 text-sm sm:text-base font-bold bg-[#145338] text-white shadow-xs transition cursor-pointer">
+          Tulis Aspirasi Baru
+        </button>
+        <button type="button" id="tab-cek" class="rounded-xl py-3 px-4 text-sm sm:text-base font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+          Cek Status Tiket
+        </button>
+      </div>
+
+      <!-- PANEL 1: FORMULIR PENGIRIMAN ASPIRASI (LAYOUT BESAR) -->
+      <section id="panel-kirim" class="rounded-3xl bg-white p-6 sm:p-10 shadow-xl shadow-slate-900/5 border border-slate-200/80">
+        <div class="border-b border-slate-100 pb-5 mb-6">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">
+            Sampaikan Aspirasi Anda
+          </h2>
+          <p class="mt-1.5 text-sm sm:text-base text-slate-600 leading-relaxed">
+            Gunakan bahasa Indonesia yang baik dan sopan. Untuk jenis <strong>Pengaduan</strong>, melampirkan <strong>Bukti Foto</strong> bersifat wajib.
+          </p>
+        </div>
+
+        <form id="form-aspirasi" class="space-y-6" novalidate>
+          <!-- Opsi Mode Identitas -->
+          <div class="rounded-2xl bg-emerald-50/70 border border-emerald-200/80 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p class="text-sm sm:text-base font-bold text-emerald-950">Kirim sebagai Anonim (Sembunyikan Nama)?</p>
+              <p class="text-xs sm:text-sm text-emerald-800 mt-0.5">Identitas Anda akan tercatat sebagai <strong>Anonim</strong> jika diaktifkan.</p>
+            </div>
+            <label class="inline-flex items-center gap-2.5 cursor-pointer select-none shrink-0">
+              <input type="checkbox" id="toggle-anonim" class="h-5 w-5 rounded border-emerald-400 text-[#145338] focus:ring-[#145338]" />
+              <span class="text-sm sm:text-base font-bold text-emerald-950">Mode Anonim</span>
+            </label>
+          </div>
+
+          <!-- Nama Lengkap & Kelas (Grid Besar) -->
+          <div id="identitas-fields" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="input-nama" class="block text-sm sm:text-base font-bold text-slate-800 mb-2">
+                Nama Lengkap <span class="text-rose-600">*</span>
+              </label>
+              <input
+                type="text"
+                id="input-nama"
+                placeholder="Masukkan nama lengkap Anda"
+                maxlength="100"
+                class="w-full rounded-2xl border border-slate-300 bg-slate-50/50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#145338] focus:bg-white focus:ring-2 focus:ring-emerald-700/20 focus:outline-none transition"
+              />
+            </div>
+
+            <div>
+              <label for="input-kelas" class="block text-sm sm:text-base font-bold text-slate-800 mb-2">
+                Kelas &amp; Jurusan <span class="text-rose-600">*</span>
+              </label>
+              <input
+                type="text"
+                id="input-kelas"
+                placeholder="Contoh: XI TITL 1 / X TKJ 2"
+                maxlength="50"
+                class="w-full rounded-2xl border border-slate-300 bg-slate-50/50 px-4 py-3.5 text-base text-slate-900 placeholder:text-slate-400 focus:border-[#145338] focus:bg-white focus:ring-2 focus:ring-emerald-700/20 focus:outline-none transition"
+              />
+            </div>
+          </div>
+
+          <!-- Jenis Aspirasi -->
+          <div>
+            <label for="input-jenis" class="block text-sm sm:text-base font-bold text-slate-800 mb-2">
+              Jenis Aspirasi <span class="text-rose-600">*</span>
+            </label>
+            <select
+              id="input-jenis"
+              class="w-full rounded-2xl border border-slate-300 bg-slate-50/50 px-4 py-3.5 text-base text-slate-900 focus:border-[#145338] focus:bg-white focus:ring-2 focus:ring-emerald-700/20 focus:outline-none transition"
+            >
+              <option value="">-- Pilih Jenis Aspirasi --</option>
+              <option value="Saran">Saran &amp; Masukan</option>
+              <option value="Kritik">Kritik Membangun</option>
+              <option value="Pengaduan">Pengaduan Fasilitas / Lingkungan (Wajib Bukti Foto)</option>
+              <option value="Pendapat">Pendapat &amp; Ide Kegiatan Siswa</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <!-- LAMPIRAN BUKTI FOTO (WAJIB JIKA JENIS = PENGADUAN, OPSIONAL UNTUK JENIS LAIN) -->
+          <div id="bukti-foto-container" class="rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50/70 p-5 transition">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <label for="input-bukti-foto" class="block text-sm sm:text-base font-bold text-slate-800">
+                Lampiran Bukti Foto <span id="bukti-wajib-badge" class="hidden ml-1.5 rounded-full bg-rose-100 text-rose-700 border border-rose-300 px-2.5 py-0.5 text-xs font-extrabold">WAJIB UNTUK PENGADUAN</span>
+              </label>
+              <span class="text-xs text-slate-500 font-medium">JPG, PNG, WEBP • Maks. 5 MB</span>
+            </div>
+
+            <p id="bukti-foto-helper" class="text-xs sm:text-sm text-slate-600 mb-3">
+              Opsional untuk saran/pendapat, dan <strong>wajib dilampirkan</strong> jika memilih jenis <strong>Pengaduan</strong>.
+            </p>
+
+            <input
+              type="file"
+              id="input-bukti-foto"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              class="block w-full text-sm text-slate-700 file:mr-4 file:rounded-xl file:border-0 file:bg-[#145338] file:px-4 file:py-2.5 file:text-sm file:font-bold file:text-white hover:file:bg-[#0f3f2a] file:cursor-pointer cursor-pointer"
+            />
+
+            <!-- Pratinjau Foto Terpilih -->
+            <div id="foto-preview-box" class="hidden mt-4 rounded-2xl bg-white border border-slate-200 p-3.5">
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span id="foto-nama-file" class="text-xs sm:text-sm font-bold text-slate-800 truncate"></span>
+                <button type="button" id="btn-hapus-foto" class="rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 px-2.5 py-1 text-xs font-bold text-rose-700 cursor-pointer shrink-0">
+                  Hapus Foto
+                </button>
+              </div>
+              <img id="foto-preview-img" src="" alt="Pratinjau Bukti Foto" class="max-h-64 w-full object-contain rounded-xl bg-slate-100" />
+            </div>
+          </div>
+
+          <!-- Isi Aspirasi (Area Teks Besar) -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label for="input-pesan" class="block text-sm sm:text-base font-bold text-slate-800">
+                Isi Aspirasi <span class="text-rose-600">*</span>
+              </label>
+              <span id="char-counter" class="text-xs sm:text-sm font-medium text-slate-500">0 / 5.000 karakter</span>
+            </div>
+            <textarea
+              id="input-pesan"
+              rows="6"
+              maxlength="5000"
+              placeholder="Tuliskan kritik, saran, pendapat, atau pengaduan Anda secara jelas, lengkap, dan sopan..."
+              class="w-full rounded-2xl border border-slate-300 bg-slate-50/50 p-4 text-base text-slate-900 placeholder:text-slate-400 leading-relaxed focus:border-[#145338] focus:bg-white focus:ring-2 focus:ring-emerald-700/20 focus:outline-none transition"
+            ></textarea>
+            <div id="live-profanity-warning" class="hidden mt-2 rounded-xl bg-rose-50 border border-rose-200 px-3.5 py-2.5 text-xs sm:text-sm font-semibold text-rose-700">
+              Peringatan: Teks terdeteksi mengandung kata tidak sopan/vulgar. Harap perbaiki sebelum mengirim.
+            </div>
+          </div>
+
+          <!-- Tombol Kirim Besar -->
+          <button
+            type="submit"
+            id="btn-submit"
+            class="w-full rounded-2xl bg-[#145338] hover:bg-[#0f3f2a] active:scale-[0.995] py-4 px-6 text-base sm:text-lg font-extrabold tracking-wide text-white shadow-lg shadow-emerald-950/15 transition cursor-pointer flex items-center justify-center gap-2.5"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <span>KIRIM ASPIRASI SEKARANG</span>
+          </button>
+
+          <p class="text-xs sm:text-sm text-center text-slate-500 leading-relaxed">
+            Aspirasi yang masuk akan ditinjau oleh pengurus OSIS SMK Negeri Karangpucung. Dilarang mengirimkan ujaran kebencian, kata-kata kasar/asusila, maupun informasi pribadi sensitif.
+          </p>
+        </form>
+      </section>
+
+      <!-- PANEL 2: CEK STATUS TIKET ASPIRASI -->
+      <section id="panel-cek" class="hidden rounded-3xl bg-white p-6 sm:p-10 shadow-xl shadow-slate-900/5 border border-slate-200/80">
+        <div class="border-b border-slate-100 pb-5 mb-6">
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900">
+            Lacak Status Aspirasi Anda
+          </h2>
+          <p class="mt-1.5 text-sm sm:text-base text-slate-600">
+            Masukkan kode tiket yang Anda peroleh saat mengirim aspirasi untuk melihat status dan tanggapan resmi OSIS.
+          </p>
+        </div>
+
+        <form id="form-cek-tiket" class="flex flex-col sm:flex-row gap-3">
+          <input
+            type="text"
+            id="input-ticket-search"
+            placeholder="Contoh: ASP-2026-4821"
+            class="flex-1 rounded-2xl border border-slate-300 bg-slate-50/50 px-4 py-3.5 text-base font-semibold uppercase text-slate-900 placeholder:normal-case placeholder:font-normal focus:border-[#145338] focus:bg-white focus:outline-none"
+          />
+          <button
+            type="submit"
+            id="btn-search-ticket"
+            class="rounded-2xl bg-[#145338] hover:bg-[#0f3f2a] px-6 py-3.5 text-base font-bold text-white transition cursor-pointer shrink-0"
+          >
+            Cek Status
+          </button>
+        </form>
+
+        <div id="ticket-detail-box" class="hidden mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+            <div>
+              <span class="text-xs font-semibold text-slate-500">Kode Tiket</span>
+              <p id="detail-ticket-id" class="text-lg font-extrabold text-slate-900"></p>
+            </div>
+            <span id="detail-status-badge" class="rounded-full px-3.5 py-1 text-xs sm:text-sm font-bold"></span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div>
+              <span class="text-slate-500">Jenis Aspirasi:</span>
+              <p id="detail-jenis" class="font-bold text-slate-800"></p>
+            </div>
+            <div>
+              <span class="text-slate-500">Tanggal Kirim:</span>
+              <p id="detail-tanggal" class="font-bold text-slate-800"></p>
+            </div>
+          </div>
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Isi Aspirasi Anda:</span>
+            <p id="detail-pesan" class="mt-1 rounded-xl bg-white p-3.5 text-sm sm:text-base text-slate-800 border border-slate-200 leading-relaxed"></p>
+          </div>
+          <div id="detail-foto-wrap" class="hidden">
+            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Bukti Foto Terlampir:</span>
+            <img id="detail-foto-img" src="" alt="Bukti Foto Laporan" class="mt-1.5 max-h-72 rounded-xl border border-slate-200 bg-white object-contain" />
+          </div>
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-800">Tanggapan Pengurus OSIS:</span>
+            <p id="detail-tanggapan" class="mt-1 rounded-xl bg-emerald-50/80 p-3.5 text-sm sm:text-base text-emerald-950 border border-emerald-200 leading-relaxed"></p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER PUBLIK BERSIH -->
+  <footer class="py-6 px-4 text-center text-xs sm:text-sm text-slate-500 border-t border-slate-200/80 bg-white">
+    <p class="font-bold text-slate-700">OSIS SMK Negeri Karangpucung</p>
+    <p class="mt-0.5">Layanan Aspirasi Digital Siswa • Bersama Membangun Sekolah yang Lebih Baik</p>
+  </footer>
+
+  <!-- SCRIPT FIREBASE FIRESTORE & STORAGE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      query,
+      where,
+      getDocs,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    import { firebaseConfig } from "./firebase-config.js";
+    import { cekKataTidakSopan } from "./profanity-filter.js";
+
+    const app = initializeApp(firebaseConfig);
+    try { getAnalytics(app); } catch (e) { /* abaikan jika di lingkungan lokal tanpa analytics */ }
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    const MAX_FOTO_BYTES = 5 * 1024 * 1024; // 5 MB
+    let fileBuktiTerpilih = null;
+
+    // Elemen DOM
+    const tabKirim = document.getElementById("tab-kirim");
+    const tabCek = document.getElementById("tab-cek");
+    const panelKirim = document.getElementById("panel-kirim");
+    const panelCek = document.getElementById("panel-cek");
+
+    const toggleAnonim = document.getElementById("toggle-anonim");
+    const identitasFields = document.getElementById("identitas-fields");
+    const inputNama = document.getElementById("input-nama");
+    const inputKelas = document.getElementById("input-kelas");
+    const inputJenis = document.getElementById("input-jenis");
+    const inputPesan = document.getElementById("input-pesan");
+    const charCounter = document.getElementById("char-counter");
+    const liveWarning = document.getElementById("live-profanity-warning");
+    const btnSubmit = document.getElementById("btn-submit");
+
+    const buktiContainer = document.getElementById("bukti-foto-container");
+    const buktiWajibBadge = document.getElementById("bukti-wajib-badge");
+    const buktiHelper = document.getElementById("bukti-foto-helper");
+    const inputBuktiFoto = document.getElementById("input-bukti-foto");
+    const fotoPreviewBox = document.getElementById("foto-preview-box");
+    const fotoPreviewImg = document.getElementById("foto-preview-img");
+    const fotoNamaFile = document.getElementById("foto-nama-file");
+    const btnHapusFoto = document.getElementById("btn-hapus-foto");
+
+    const alertBox = document.getElementById("alert-box");
+    const alertTitle = document.getElementById("alert-title");
+    const alertDesc = document.getElementById("alert-desc");
+    const alertIcon = document.getElementById("alert-icon");
+    const ticketResult = document.getElementById("ticket-result");
+    const ticketCodeText = document.getElementById("ticket-code-text");
+
+    function perbaruiStatusWajibBuktiFoto() {
+      const isPengaduan = inputJenis.value === "Pengaduan";
+      if (isPengaduan) {
+        buktiWajibBadge.classList.remove("hidden");
+        buktiHelper.innerHTML = 'Jenis <strong>Pengaduan</strong> wajib melampirkan foto bukti yang jelas agar dapat diverifikasi dan ditindaklanjuti oleh OSIS.';
+        buktiContainer.classList.remove("border-slate-300", "bg-slate-50/70");
+        buktiContainer.classList.add("border-rose-300", "bg-rose-50/30");
+      } else {
+        buktiWajibBadge.classList.add("hidden");
+        buktiHelper.innerHTML = 'Opsional untuk saran/pendapat, dan <strong>wajib dilampirkan</strong> jika memilih jenis <strong>Pengaduan</strong>.';
+        buktiContainer.classList.remove("border-rose-300", "bg-rose-50/30");
+        buktiContainer.classList.add("border-slate-300", "bg-slate-50/70");
+      }
+    }
+
+    inputJenis.addEventListener("change", perbaruiStatusWajibBuktiFoto);
+
+    function resetBuktiFoto() {
+      fileBuktiTerpilih = null;
+      inputBuktiFoto.value = "";
+      fotoPreviewImg.src = "";
+      fotoNamaFile.textContent = "";
+      fotoPreviewBox.classList.add("hidden");
+    }
+
+    inputBuktiFoto.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      if (!file) {
+        resetBuktiFoto();
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        resetBuktiFoto();
+        tampilkanAlert("peringatan", "Format File Tidak Didukung", "Harap pilih file gambar (JPG, PNG, atau WEBP) sebagai bukti foto.");
+        return;
+      }
+
+      if (file.size > MAX_FOTO_BYTES) {
+        resetBuktiFoto();
+        tampilkanAlert("peringatan", "Ukuran Foto Terlalu Besar", "Ukuran maksimal bukti foto adalah 5 MB. Silakan kompres atau pilih foto lain.");
+        return;
+      }
+
+      fileBuktiTerpilih = file;
+      fotoNamaFile.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
+      fotoPreviewImg.src = URL.createObjectURL(file);
+      fotoPreviewBox.classList.remove("hidden");
+    });
+
+    btnHapusFoto.addEventListener("click", resetBuktiFoto);
+
+    // Navigasi Tab
+    tabKirim.addEventListener("click", () => {
+      tabKirim.className = "rounded-xl py-3 px-4 text-sm sm:text-base font-bold bg-[#145338] text-white shadow-xs transition cursor-pointer";
+      tabCek.className = "rounded-xl py-3 px-4 text-sm sm:text-base font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer";
+      panelKirim.classList.remove("hidden");
+      panelCek.classList.add("hidden");
+    });
+
+    tabCek.addEventListener("click", () => {
+      tabCek.className = "rounded-xl py-3 px-4 text-sm sm:text-base font-bold bg-[#145338] text-white shadow-xs transition cursor-pointer";
+      tabKirim.className = "rounded-xl py-3 px-4 text-sm sm:text-base font-bold text-slate-700 hover:bg-slate-100 transition cursor-pointer";
+      panelCek.classList.remove("hidden");
+      panelKirim.classList.add("hidden");
+      alertBox.classList.add("hidden");
+    });
+
+    // Toggle Anonim
+    toggleAnonim.addEventListener("change", () => {
+      if (toggleAnonim.checked) {
+        identitasFields.classList.add("opacity-50", "pointer-events-none");
+        inputNama.value = "";
+        inputKelas.value = "";
+      } else {
+        identitasFields.classList.remove("opacity-50", "pointer-events-none");
+      }
+    });
+
+    // Hitung Karakter & Cek Kata Tidak Sopan Real-time
+    inputPesan.addEventListener("input", () => {
+      const len = inputPesan.value.length;
+      charCounter.textContent = `${len.toLocaleString("id-ID")} / 5.000 karakter`;
+
+      const hasilCek = cekKataTidakSopan(inputPesan.value);
+      if (!hasilCek.aman) {
+        liveWarning.classList.remove("hidden");
+      } else {
+        liveWarning.classList.add("hidden");
+      }
+    });
+
+    function tampilkanAlert(tipe, judul, deskripsi, kodeTiket = null) {
+      alertBox.classList.remove("hidden", "bg-emerald-50", "border-emerald-300", "text-emerald-950", "bg-rose-50", "border-rose-300", "text-rose-950", "bg-amber-50", "border-amber-300", "text-amber-950");
+      ticketResult.classList.add("hidden");
+
+      if (tipe === "sukses") {
+        alertBox.classList.add("bg-emerald-50", "border-emerald-300", "text-emerald-950");
+        alertIcon.innerHTML = `<svg class="h-6 w-6 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+        if (kodeTiket) {
+          ticketCodeText.textContent = kodeTiket;
+          ticketResult.classList.remove("hidden");
+        }
+      } else if (tipe === "blokir") {
+        alertBox.classList.add("bg-rose-50", "border-rose-300", "text-rose-950");
+        alertIcon.innerHTML = `<svg class="h-6 w-6 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`;
+      } else {
+        alertBox.classList.add("bg-amber-50", "border-amber-300", "text-amber-950");
+        alertIcon.innerHTML = `<svg class="h-6 w-6 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+      }
+
+      alertTitle.textContent = judul;
+      alertDesc.textContent = deskripsi;
+      alertBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    document.getElementById("btn-copy-ticket").addEventListener("click", () => {
+      const code = ticketCodeText.textContent;
+      navigator.clipboard?.writeText(code);
+      const btn = document.getElementById("btn-copy-ticket");
+      btn.textContent = "Tersalin!";
+      setTimeout(() => { btn.textContent = "Salin Kode Tiket"; }, 2000);
+    });
+
+    function buatKodeTiket() {
+      const tahun = new Date().getFullYear();
+      const acak = Math.floor(1000 + Math.random() * 9000);
+      return `ASP-${tahun}-${acak}`;
+    }
+
+    // Submit Aspirasi
+    document.getElementById("form-aspirasi").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const isAnonim = toggleAnonim.checked;
+      const nama = isAnonim ? "Anonim" : inputNama.value.trim();
+      const kelas = isAnonim ? "-" : inputKelas.value.trim();
+      const jenis = inputJenis.value.trim();
+      const pesan = inputPesan.value.trim();
+
+      if (!isAnonim && (!nama || !kelas)) {
+        tampilkanAlert("peringatan", "Data Identitas Belum Lengkap", "Silakan isi Nama Lengkap dan Kelas Anda, atau aktifkan Mode Anonim.");
+        return;
+      }
+      if (!jenis) {
+        tampilkanAlert("peringatan", "Jenis Aspirasi Belum Dipilih", "Silakan pilih kategori/jenis aspirasi terlebih dahulu.");
+        return;
+      }
+      // WAJIB BUKTI FOTO KETIKA JENIS = PENGADUAN
+      if (jenis === "Pengaduan" && !fileBuktiTerpilih) {
+        tampilkanAlert(
+          "peringatan",
+          "Bukti Foto Wajib Dilampirkan",
+          "Untuk jenis laporan Pengaduan, Anda wajib mengunggah Bukti Foto terlebih dahulu sebelum mengirim laporan."
+        );
+        inputBuktiFoto.focus();
+        return;
+      }
+      if (pesan.length < 10) {
+        tampilkanAlert("peringatan", "Isi Aspirasi Terlalu Singkat", "Tuliskan aspirasi Anda minimal 10 karakter agar mudah dipahami dan ditindaklanjuti.");
+        return;
+      }
+
+      // Validasi Pemblokiran Kata Tidak Sopan
+      const gabunganTeks = `${nama} ${kelas} ${pesan}`;
+      const hasilFilter = cekKataTidakSopan(gabunganTeks);
+
+      if (!hasilFilter.aman) {
+        tampilkanAlert(
+          "blokir",
+          "Pengiriman Diblokir oleh Filter Etika",
+          "Laporan Anda terdeteksi mengandung kata-kata tidak sopan, kasar, atau berbau asusila/vulgar. Silakan ubah bahasa Anda menjadi lebih santun sebelum mengirim kembali."
+        );
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.classList.add("opacity-70");
+      const teksAsliBtn = btnSubmit.innerHTML;
+      btnSubmit.textContent = fileBuktiTerpilih ? "Mengunggah Bukti Foto & Mengirim..." : "Mengirim Aspirasi...";
+
+      try {
+        const ticketId = buatKodeTiket();
+        let buktiFotoUrl = "";
+        let buktiFotoPath = "";
+        let buktiFotoNama = "";
+
+        if (fileBuktiTerpilih) {
+          const ext = (fileBuktiTerpilih.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+          buktiFotoPath = `bukti_pengaduan/${ticketId}_${Date.now()}.${ext || "jpg"}`;
+          const storageRef = ref(storage, buktiFotoPath);
+          const uploadSnap = await uploadBytes(storageRef, fileBuktiTerpilih);
+          buktiFotoUrl = await getDownloadURL(uploadSnap.ref);
+          buktiFotoNama = fileBuktiTerpilih.name;
+        }
+
+        await addDoc(collection(db, "aspirasi"), {
+          ticketId,
+          isAnonim,
+          nama,
+          kelas,
+          jenis,
+          pesan,
+          buktiFotoUrl,
+          buktiFotoPath,
+          buktiFotoNama,
+          status: "Menunggu",
+          tanggapan: "",
+          createdAt: serverTimestamp()
+        });
+
+        document.getElementById("form-aspirasi").reset();
+        resetBuktiFoto();
+        perbaruiStatusWajibBuktiFoto();
+        identitasFields.classList.remove("opacity-50", "pointer-events-none");
+        charCounter.textContent = "0 / 5.000 karakter";
+        liveWarning.classList.add("hidden");
+
+        tampilkanAlert(
+          "sukses",
+          "Aspirasi Berhasil Dikirim!",
+          "Terima kasih telah berpartisipasi membangun SMK Negeri Karangpucung. Aspirasi dan bukti foto (jika dilampirkan) telah masuk ke sistem pengurus OSIS.",
+          ticketId
+        );
+      } catch (err) {
+        console.error(err);
+        tampilkanAlert(
+          "peringatan",
+          "Gagal Mengirim Aspirasi",
+          "Terjadi gangguan koneksi atau izin Firebase Storage/Firestore. Pastikan Storage & Firestore sudah aktif dan aturan keamanannya sesuai."
+        );
+      } finally {
+        btnSubmit.disabled = false;
+        btnSubmit.classList.remove("opacity-70");
+        btnSubmit.innerHTML = teksAsliBtn;
+      }
+    });
+
+    // Cek Status Tiket
+    document.getElementById("form-cek-tiket").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const kode = document.getElementById("input-ticket-search").value.trim().toUpperCase();
+      const boxDetail = document.getElementById("ticket-detail-box");
+
+      if (!kode) {
+        tampilkanAlert("peringatan", "Kode Tiket Kosong", "Masukkan kode tiket Anda (contoh: ASP-2026-1234).");
+        return;
+      }
+
+      const btnCari = document.getElementById("btn-search-ticket");
+      btnCari.disabled = true;
+      btnCari.textContent = "Mencari...";
+
+      try {
+        const q = query(collection(db, "aspirasi"), where("ticketId", "==", kode));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          boxDetail.classList.add("hidden");
+          tampilkanAlert("peringatan", "Tiket Tidak Ditemukan", `Tidak ada laporan dengan kode tiket "${kode}". Periksa kembali huruf dan angkanya.`);
+          return;
+        }
+
+        alertBox.classList.add("hidden");
+        const data = snap.docs[0].data();
+
+        document.getElementById("detail-ticket-id").textContent = data.ticketId;
+        document.getElementById("detail-jenis").textContent = data.jenis || "-";
+        document.getElementById("detail-pesan").textContent = data.pesan || "-";
+        document.getElementById("detail-tanggapan").textContent = data.tanggapan
+          ? data.tanggapan
+          : "Belum ada tanggapan resmi. Aspirasi Anda sedang dalam antrean peninjauan pengurus OSIS.";
+
+        const fotoWrap = document.getElementById("detail-foto-wrap");
+        const fotoImg = document.getElementById("detail-foto-img");
+        if (data.buktiFotoUrl) {
+          fotoImg.src = data.buktiFotoUrl;
+          fotoWrap.classList.remove("hidden");
+        } else {
+          fotoImg.src = "";
+          fotoWrap.classList.add("hidden");
+        }
+
+        const tgl = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString("id-ID", {
+          dateStyle: "medium",
+          timeStyle: "short"
+        }) : "Baru saja";
+        document.getElementById("detail-tanggal").textContent = tgl;
+
+        const badge = document.getElementById("detail-status-badge");
+        const status = data.status || "Menunggu";
+        badge.textContent = status;
+        badge.className = "rounded-full px-3.5 py-1 text-xs sm:text-sm font-bold ";
+        if (status === "Selesai") {
+          badge.className += "bg-emerald-100 text-emerald-800 border border-emerald-300";
+        } else if (status === "Diproses") {
+          badge.className += "bg-amber-100 text-amber-800 border border-amber-300";
+        } else {
+          badge.className += "bg-slate-200 text-slate-800 border border-slate-300";
+        }
+
+        boxDetail.classList.remove("hidden");
+      } catch (err) {
+        console.error(err);
+        tampilkanAlert("peringatan", "Gagal Memuat Tiket", "Terjadi kendala saat mengambil data dari server.");
+      } finally {
+        btnCari.disabled = false;
+        btnCari.textContent = "Cek Status";
+      }
+      // Filter Kata Tidak Sopan, Asusila, SARA, & Kasar (Bahasa Indonesia, Daerah/Ngapak, & Inggris Umum)
+
+const KATA_TERLARANG = [
+  // Alat kelamin & istilah vulgar seksual
+  "kontol", "kntl", "kontl", "memek", "mmk", "pepek", "ppk", "puki", "pukimak",
+  "jembut", "jmbt", "itil", "klitoris", "penis", "vagina", "zakar", "pelir",
+  "biji pelir", "tetek", "toket", "payudara", "puting", "pentil", "pantat",
+  "bokong", "dubur", "anus", "sperma", "peju", "mani", "coli", "colmek",
+  "onani", "masturbasi", "ngentot", "ngentod", "entot", "ngewe", "ewe",
+  "bersetubuh", "mesum", "cabul", "bokep", "porno", "pornografi", "bugil",
+  "telanjang", "pelacur", "lonte", "jablay", "perek", "psk", "gigolo",
+  "sundal", "bispak", "open bo", "bo", "sange", "horny", "birahi",
+  "blowjob", "handjob", "sepong", "nyepong", "jilat memek", "jilat kontol",
+  "dick", "cock", "pussy", "cunt", "boobs", "tits", "fuck", "fucking",
+  "bitch", "whore", "slut", "porn", "sex", "nude", "naked",
+
+  // Umpatan kasar & penghinaan berat
+  "anjing", "anjg", "anjir", "anjay", "babi", "monyet", "kunyuk", "bangsat",
+  "bgst", "bajingan", "keparat", "kampret", "brengsek", "sialan", "setan",
+  "iblis", "jahanam", "laknat", "goblok", "gblk", "goblog", "tolol", "tll",
+  "bego", "bodoh", "idiot", "dungu", "bloon", "geblek", "sarap", "gila",
+  "tai", "taik", "tahi", "berak", "kencing", "kentut", "bacot", "bcot",
+  "cocot", "lambe", "congor", "cukimai", "jancok", "jancuk", "dancok",
+  "asu", "asw", "celeng", "bedes", "kirik", "matamu", "ndasmu", "picek",
+  "budek", "buntung", "cacat", "autis", "bastard", "asshole", "shit", "bullshit"
+];
+
+function normalisasiTeks(teks) {
+  return teks
+    .toLowerCase()
+    .replace(/[@4]/g, "a")
+    .replace(/[!1|]/g, "i")
+    .replace(/[0]/g, "o")
+    .replace(/[3]/g, "e")
+    .replace(/[$5]/g, "s")
+    .replace(/[7]/g, "t")
+    .replace(/[8]/g, "b")
+    .replace(/[9]/g, "g")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/(.)\1{2,}/g, "$1$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+export function cekKataTidakSopan(teks) {
+  if (!teks || typeof teks !== "string") {
+    return { aman: true, kataTerdeteksi: [] };
+  }
+
+  const bersih = normalisasiTeks(teks);
+  const tokenKata = bersih.split(" ");
+  const ditemukan = new Set();
+
+  for (const kata of KATA_TERLARANG) {
+    if (tokenKata.includes(kata)) {
+      ditemukan.add(kata);
+      continue;
+    }
+
+    const tunggal = bersih.replace(/(.)\1+/g, "$1");
+    if (tunggal.split(" ").includes(kata)) {
+      ditemukan.add(kata);
+      continue;
+    }
+
+    if (kata.length >= 4) {
+      const regexBatas = new RegExp(`\\b${kata}\\b`, "i");
+      if (regexBatas.test(bersih)) {
+        ditemukan.add(kata);
+        continue;
+      }
+      const polaSpasi = kata.split("").join("\\s+");
+      const regexSpasi = new RegExp(`(?:^|\\s)${polaSpasi}(?:$|\\s)`, "i");
+      if (regexSpasi.test(bersih)) {
+        ditemukan.add(kata);
+      }
+    }
+  }
+
+  return {
+    aman: ditemukan.size === 0,
+    kataTerdeteksi: Array.from(ditemukan)
+  };
+}          
+    });
+  </script>
+</body>
+</html>
